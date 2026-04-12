@@ -1,56 +1,1000 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Pixel Map Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>PixelMap — CSS Box-Shadow Generator</title>
+<style>
+:root {
+  --bg:      #080810;
+  --bg2:     #0f0f1a;
+  --bg3:     #161625;
+  --bg4:     #1d1d30;
+  --border:  rgba(255,255,255,0.07);
+  --bh:      rgba(255,255,255,0.13);
+  --text:    #e8e8f0;
+  --muted:   #6a6a88;
+  --accent:  #4fffb0;
+  --adim:    rgba(79,255,176,0.08);
+  --aborder: rgba(79,255,176,0.22);
+  --amber:   #ffc046;
+  --red:     #ff5e6c;
+  --mono: 'JetBrains Mono','Fira Code','Cascadia Code',Consolas,'Courier New',monospace;
+  --sans: -apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --r:  8px;
+  --rl: 14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ── HEADER ── */
+header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 8px);
+  grid-template-rows: repeat(8, 8px);
+  gap: 1.5px;
+  flex-shrink: 0;
+}
+.lp { border-radius: 1.5px; }
+
+.htxt h1 {
+  font-family: var(--mono);
+  font-size: clamp(18px, 4vw, 26px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.htxt h1 em { color: var(--accent); font-style: normal; }
+.htxt p {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.badge {
+  display: inline-block;
+  background: var(--adim);
+  color: var(--accent);
+  border: 1px solid var(--aborder);
+  font-size: 9px;
+  font-family: var(--mono);
+  padding: 2px 7px 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 1.5px;
+  vertical-align: middle;
+  margin-left: 8px;
+  text-transform: uppercase;
+}
+
+/* ── DROPZONE ── */
+.dropzone {
+  border: 1.5px dashed var(--bh);
+  border-radius: var(--rl);
+  padding: clamp(2rem, 5vw, 3.5rem) 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: var(--bg2);
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+.dropzone:hover, .dropzone.over {
+  border-color: var(--accent);
+  background: var(--adim);
+}
+.dropzone input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.dz-icon {
+  display: grid;
+  grid-template-columns: repeat(8, 8px);
+  grid-template-rows: repeat(8, 8px);
+  gap: 1.5px;
+  margin: 0 auto 14px;
+  width: fit-content;
+}
+.dz-icon span { border-radius: 1.5px; }
+.dropzone h2 {
+  font-size: clamp(15px, 3vw, 18px);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.dropzone p {
+  font-size: 13px;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+.dropzone p strong { color: var(--accent); font-weight: 500; }
+.dropzone .hint { font-size: 11px; margin-top: 6px; }
+
+/* ── SETTINGS ── */
+.settings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 1.25rem;
+}
+.sg {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px 14px;
+}
+.sg label {
+  display: block;
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 9px;
+}
+.sg input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--bg4);
+  border-radius: 2px;
+  outline: none;
+  margin-bottom: 5px;
+}
+.sg input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--accent);
+  cursor: pointer;
+}
+.sg input[type=range]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--accent);
+  cursor: pointer;
+  border: none;
+}
+.rrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--muted);
+}
+.rval { color: var(--accent); font-weight: 700; }
+.sg select {
+  width: 100%;
+  background: var(--bg3);
+  color: var(--text);
+  border: 1px solid var(--bh);
+  border-radius: 5px;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-family: var(--mono);
+  outline: none;
+}
+.sg select:focus { border-color: var(--accent); }
+
+/* ── PROCESS BTN ── */
+.btn-gen {
+  display: none;
+  width: 100%;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: var(--r);
+  padding: 14px;
+  font-size: 14px;
+  font-family: var(--mono);
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  margin-bottom: 1.25rem;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn-gen:hover { opacity: 0.85; }
+.btn-gen:active { transform: scale(0.99); }
+.btn-gen:disabled { opacity: 0.4; cursor: default; }
+
+/* ── PROGRESS ── */
+.progress {
+  display: none;
+  height: 3px;
+  background: var(--bg4);
+  border-radius: 2px;
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.08s linear;
+}
+
+/* ── RESULTS ── */
+.results { display: none; }
+
+/* Stats */
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1.25rem;
+}
+.stat {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 16px;
+  font-family: var(--mono);
+}
+.stat .v {
+  display: block;
+  font-size: clamp(16px, 3vw, 20px);
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.1;
+}
+.stat .l { font-size: 11px; color: var(--muted); }
+
+/* Tabs */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 9px 18px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+  letter-spacing: 0.3px;
+}
+.tab:hover { color: var(--text); }
+.tab.on {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.tc { display: none; }
+.tc.on { display: block; }
+
+/* Preview */
+.preview-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--rl);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  overflow: auto;
+}
+.prev-row {
+  display: flex;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+.prev-item { text-align: center; }
+.prev-lbl {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.checker {
+  background-image:
+    linear-gradient(45deg,#2a2a3a 25%,transparent 25%),
+    linear-gradient(-45deg,#2a2a3a 25%,transparent 25%),
+    linear-gradient(45deg,transparent 75%,#2a2a3a 75%),
+    linear-gradient(-45deg,transparent 75%,#2a2a3a 75%);
+  background-size: 10px 10px;
+  background-position: 0 0, 0 5px, 5px -5px, -5px 0;
+  border-radius: 5px;
+  display: inline-block;
+}
+canvas {
+  display: block;
+  border: 1px solid var(--bh);
+  border-radius: 4px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  max-width: min(280px, 100%);
+}
+
+/* Code blocks */
+.code-block {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--rl);
+  overflow: hidden;
+}
+.cb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cb-name {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cb-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--accent);
+  display: inline-block;
+}
+.cb-stat { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.code-scroll {
+  max-height: 380px;
+  overflow: auto;
+  padding: 1rem 1.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bh) transparent;
+}
+.code-scroll::-webkit-scrollbar { width: 5px; }
+.code-scroll::-webkit-scrollbar-thumb {
+  background: var(--bh);
+  border-radius: 3px;
+}
+pre {
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Actions */
+.actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 1rem;
+}
+.btn {
+  background: var(--bg2);
+  color: var(--text);
+  border: 1px solid var(--bh);
+  border-radius: var(--r);
+  padding: 11px 16px;
+  font-size: 12px;
+  font-family: var(--mono);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  letter-spacing: 0.2px;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); background: var(--adim); }
+.btn:active { transform: scale(0.98); }
+.btn.pri {
+  background: var(--adim);
+  border-color: var(--aborder);
+  color: var(--accent);
+}
+.btn.pri:hover {
+  background: var(--accent);
+  color: #000;
+}
+.btn svg { flex-shrink: 0; }
+.btn.danger:hover { border-color: var(--red); color: var(--red); background: rgba(255,94,108,0.08); }
+
+/* Warning banner */
+.warn {
+  display: none;
+  background: rgba(255,192,70,0.1);
+  border: 1px solid rgba(255,192,70,0.25);
+  border-radius: var(--r);
+  padding: 10px 14px;
+  font-size: 12px;
+  font-family: var(--mono);
+  color: var(--amber);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+.warn.on { display: block; }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: var(--bg3);
+  border: 1px solid var(--bh);
+  border-left: 3px solid var(--accent);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 11px 18px;
+  border-radius: var(--r);
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 999;
+  max-width: 280px;
+  pointer-events: none;
+}
+.toast.on { transform: translateY(0); opacity: 1; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 480px) {
+  .app { padding: 1rem 1rem 3rem; }
+  header { gap: 12px; }
+  .logo-grid { display: none; }
+  .settings { grid-template-columns: 1fr 1fr; }
+  .actions { grid-template-columns: 1fr 1fr; }
+  .stats { gap: 8px; }
+  .stat { padding: 8px 12px; }
+}
+@media (max-width: 360px) {
+  .settings { grid-template-columns: 1fr; }
+  .actions { grid-template-columns: 1fr; }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .app { padding: 1.5rem 2rem 4rem; }
+  .settings { grid-template-columns: repeat(4, 1fr); }
+}
+@media (min-width: 1024px) {
+  .settings { grid-template-columns: repeat(4, 1fr); }
+}
+</style>
 </head>
 <body>
 
-<input type="file" id="upload">
-<pre id="output"></pre>
+<div class="app">
 
+  <!-- HEADER -->
+  <header>
+    <div class="logo-grid" id="logo"></div>
+    <div class="htxt">
+      <h1>Pixel<em>Map</em><span class="badge">v2</span></h1>
+      <p>// image → css box-shadow pixel art generator</p>
+    </div>
+  </header>
+
+  <!-- DROPZONE -->
+  <div class="dropzone" id="dz">
+    <input type="file" id="fi" accept="image/*">
+    <div class="dz-icon" id="dz-icon"></div>
+    <h2>Drop your image here</h2>
+    <p>or <strong>click to browse</strong> &nbsp;·&nbsp; PNG · JPG · GIF · WebP · SVG</p>
+    <p class="hint" style="color:var(--muted)">Best results with small sprites, icons &amp; pixel art (8×8 → 128×128)</p>
+  </div>
+
+  <!-- WARNING -->
+  <div class="warn" id="warn"></div>
+
+  <!-- SETTINGS -->
+  <div class="settings">
+    <div class="sg">
+      <label>Max Dimension</label>
+      <select id="maxdim">
+        <option value="0">No limit</option>
+        <option value="16">16 px</option>
+        <option value="32" selected>32 px</option>
+        <option value="64">64 px</option>
+        <option value="128">128 px</option>
+        <option value="256">256 px</option>
+      </select>
+    </div>
+    <div class="sg">
+      <label>Pixel Scale</label>
+      <input type="range" id="scale" min="1" max="24" value="8">
+      <div class="rrow"><span>1×</span><span class="rval" id="sv">8×</span><span>24×</span></div>
+    </div>
+    <div class="sg">
+      <label>Alpha Threshold</label>
+      <input type="range" id="alpha" min="0" max="254" value="0">
+      <div class="rrow"><span>0</span><span class="rval" id="av">0</span><span>254</span></div>
+    </div>
+    <div class="sg">
+      <label>Color Format</label>
+      <select id="fmt">
+        <option value="hex">#rrggbb hex</option>
+        <option value="rgb">rgb(r, g, b)</option>
+        <option value="rgba">rgba(r, g, b, a)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- GENERATE -->
+  <button class="btn-gen" id="bg">▮▮ Generate Pixel Map</button>
+
+  <!-- PROGRESS -->
+  <div class="progress" id="pb"><div class="progress-fill" id="pf"></div></div>
+
+  <!-- RESULTS -->
+  <div class="results" id="res">
+
+    <div class="stats">
+      <div class="stat"><span class="v" id="s-px">0</span><span class="l">visible pixels</span></div>
+      <div class="stat"><span class="v" id="s-sz">—</span><span class="l">dimensions</span></div>
+      <div class="stat"><span class="v" id="s-kb">—</span><span class="l">code size</span></div>
+      <div class="stat"><span class="v" id="s-sc">—</span><span class="l">scale</span></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab on" data-t="preview">⬛ Preview</button>
+      <button class="tab" data-t="css">CSS Code</button>
+      <button class="tab" data-t="html">HTML File</button>
+    </div>
+
+    <div class="tc on" id="tc-preview">
+      <div class="preview-box">
+        <div class="prev-row">
+          <div class="prev-item">
+            <div class="prev-lbl">Original</div>
+            <div class="checker"><canvas id="co"></canvas></div>
+          </div>
+          <div class="prev-item">
+            <div class="prev-lbl">Processed &amp; Scaled</div>
+            <div class="checker"><canvas id="cp"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tc" id="tc-css">
+      <div class="code-block">
+        <div class="cb-header">
+          <span class="cb-name"><span class="cb-dot"></span>pixel-art.css</span>
+          <span class="cb-stat" id="cs-stat"></span>
+        </div>
+        <div class="code-scroll"><pre id="css-out"></pre></div>
+      </div>
+    </div>
+
+    <div class="tc" id="tc-html">
+      <div class="code-block">
+        <div class="cb-header">
+          <span class="cb-name"><span class="cb-dot" style="background:var(--amber)"></span>index.html</span>
+          <span class="cb-stat">self-contained · ready to open</span>
+        </div>
+        <div class="code-scroll"><pre id="html-out"></pre></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn pri" id="b-ccss">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+          <rect x="5" y="5" width="9" height="9" rx="2"/>
+          <path d="M11 5V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h2"/>
+        </svg>
+        Copy CSS
+      </button>
+      <button class="btn" id="b-chtml">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+          <rect x="5" y="5" width="9" height="9" rx="2"/>
+          <path d="M11 5V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h2"/>
+        </svg>
+        Copy HTML
+      </button>
+      <button class="btn" id="b-dcss">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M8 2v8M5 7l3 3 3-3"/><path d="M2 13h12"/>
+        </svg>
+        Download CSS
+      </button>
+      <button class="btn pri" id="b-zip">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+          <rect x="3" y="1" width="10" height="14" rx="1.5"/>
+          <path d="M6 1v4h4V1M8 8v4M6 10l2 2 2-2"/>
+        </svg>
+        Download ZIP
+      </button>
+      <button class="btn" id="b-dhtml">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M8 2v8M5 7l3 3 3-3"/><path d="M2 13h12"/>
+        </svg>
+        Download HTML
+      </button>
+      <button class="btn danger" id="b-reset">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M3.5 8a4.5 4.5 0 1 0 1.3-3.2L3 3v4h4L5.5 5.5"/>
+        </svg>
+        Reset
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous"></script>
 <script>
-document.getElementById("upload").onchange = function(e) {
-  const file = e.target.files[0];
-  const img = new Image();
-  img.src = URL.createObjectURL(file);
+/* ── PIXEL LOGO ── */
+(function(){
+  const logoEl = document.getElementById('logo');
+  const p = [
+    1,1,1,1,1,1,1,1,
+    1,0,0,0,0,0,0,1,
+    1,0,1,1,1,1,0,1,
+    1,0,1,0,0,1,0,1,
+    1,0,1,0,0,1,0,1,
+    1,0,1,1,1,1,0,1,
+    1,0,0,0,0,0,0,1,
+    1,1,1,1,1,1,1,1
+  ];
+  p.forEach(on => {
+    const s = document.createElement('span');
+    s.className = 'lp';
+    s.style.background = on ? '#4fffb0' : 'rgba(79,255,176,0.07)';
+    logoEl.appendChild(s);
+  });
 
-  img.onload = () => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+  // DZ icon — upload arrow
+  const iz = document.getElementById('dz-icon');
+  iz.style.cssText = 'grid-template-columns:repeat(8,8px);grid-template-rows:repeat(8,8px);gap:1.5px;margin:0 auto 14px;display:grid;width:fit-content;';
+  const ip = [
+    0,0,0,1,1,0,0,0,
+    0,0,1,1,1,1,0,0,
+    0,1,1,0,0,1,1,0,
+    1,0,0,0,0,0,0,1,
+    0,0,0,1,1,0,0,0,
+    0,0,0,1,1,0,0,0,
+    0,0,1,1,1,1,0,0,
+    0,0,1,1,1,1,0,0
+  ];
+  ip.forEach(on => {
+    const s = document.createElement('span');
+    s.style.cssText = `border-radius:1.5px;background:${on ? '#4fffb0' : 'transparent'}`;
+    iz.appendChild(s);
+  });
+})();
 
-    canvas.width = img.width;
-    canvas.height = img.height;
+/* ── STATE ── */
+let img = null, cssCode = '', htmlCode = '';
 
-    ctx.drawImage(img, 0, 0);
+/* ── RANGE INPUTS ── */
+document.getElementById('scale').addEventListener('input', e => {
+  document.getElementById('sv').textContent = e.target.value + '×';
+});
+document.getElementById('alpha').addEventListener('input', e => {
+  document.getElementById('av').textContent = e.target.value;
+});
 
-    const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+/* ── DRAG & DROP ── */
+const dz = document.getElementById('dz');
+const fi = document.getElementById('fi');
 
-    let css = "box-shadow:\n";
+['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => dz.addEventListener(ev, () => dz.classList.remove('over')));
+dz.addEventListener('drop', e => {
+  e.preventDefault();
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) loadFile(f);
+});
+fi.addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); });
 
-    for (let y = 0; y < canvas.height; y++) {
-      for (let x = 0; x < canvas.width; x++) {
-        const i = (y * canvas.width + x) * 4;
-        const r = data[i];
-        const g = data[i+1];
-        const b = data[i+2];
-        const a = data[i+3];
+function loadFile(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const i = new Image();
+    i.onload = () => {
+      img = i;
+      document.getElementById('bg').style.display = 'block';
+      // Check size warning
+      const maxDim = parseInt(document.getElementById('maxdim').value) || Math.max(i.width, i.height);
+      const eff = Math.min(i.width, maxDim), effh = Math.min(i.height, maxDim);
+      const ratio = Math.min(maxDim / i.width, maxDim / i.height, 1);
+      const pw = Math.round(i.width * ratio), ph = Math.round(i.height * ratio);
+      const est = pw * ph;
+      const warnEl = document.getElementById('warn');
+      if (est > 4096) {
+        warnEl.textContent = `⚠ Large image detected (~${est.toLocaleString()} pixels). The CSS output may be very large. Consider a smaller Max Dimension setting.`;
+        warnEl.classList.add('on');
+      } else { warnEl.classList.remove('on'); }
+      generate();
+    };
+    i.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
 
-        if (a > 0) {
-          css += `${x}px ${y}px rgb(${r},${g},${b}),\n`;
+/* ── GENERATE ── */
+function generate() {
+  if (!img) return;
+  const btn = document.getElementById('bg');
+  btn.disabled = true;
+  btn.textContent = '▮▮ Processing...';
+  document.getElementById('pb').style.display = 'block';
+  document.getElementById('pf').style.width = '0%';
+
+  const maxDim = parseInt(document.getElementById('maxdim').value);
+  const scale  = parseInt(document.getElementById('scale').value);
+  const alpha  = parseInt(document.getElementById('alpha').value);
+  const fmt    = document.getElementById('fmt').value;
+
+  // Compute output size
+  let W = img.width, H = img.height;
+  if (maxDim > 0 && (W > maxDim || H > maxDim)) {
+    const r = Math.min(maxDim / W, maxDim / H);
+    W = Math.round(W * r);
+    H = Math.round(H * r);
+  }
+
+  // Original canvas preview
+  const co = document.getElementById('co');
+  const os = Math.min(120 / img.width, 120 / img.height, 3);
+  co.width  = Math.round(img.width * os);
+  co.height = Math.round(img.height * os);
+  const cx = co.getContext('2d');
+  cx.imageSmoothingEnabled = false;
+  cx.drawImage(img, 0, 0, co.width, co.height);
+
+  // Processed source canvas
+  const tmp = document.createElement('canvas');
+  tmp.width = W; tmp.height = H;
+  const tx = tmp.getContext('2d');
+  tx.drawImage(img, 0, 0, W, H);
+  const px = tx.getImageData(0, 0, W, H).data;
+
+  // Processed preview canvas
+  const cp = document.getElementById('cp');
+  const ps = Math.min(120 / W, 120 / H, 4);
+  cp.width  = Math.round(W * ps);
+  cp.height = Math.round(H * ps);
+  const cpx = cp.getContext('2d');
+  cpx.imageSmoothingEnabled = false;
+  cpx.drawImage(tmp, 0, 0, cp.width, cp.height);
+
+  // Build box-shadows in async chunks
+  const shadows = [];
+  let done = 0;
+  const total = W * H;
+  const CHUNK = 4000;
+
+  function chunk() {
+    const end = Math.min(done + CHUNK, total);
+    for (let i = done; i < end; i++) {
+      const x = i % W, y = Math.floor(i / W);
+      const j = i * 4;
+      const r = px[j], g = px[j+1], b = px[j+2], a = px[j+3];
+      if (a > alpha) {
+        let col;
+        if (fmt === 'hex') {
+          col = '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+        } else if (fmt === 'rgb') {
+          col = `rgb(${r},${g},${b})`;
+        } else {
+          col = `rgba(${r},${g},${b},${(a/255).toFixed(2)})`;
         }
+        const spread = scale > 1 ? ` 0 ${scale-1}px` : '';
+        shadows.push(`${x*scale}px ${y*scale}px${spread} ${col}`);
       }
     }
+    done = end;
+    document.getElementById('pf').style.width = Math.round((done/total)*100) + '%';
+    if (done < total) { requestAnimationFrame(chunk); }
+    else { finish(shadows, W, H, scale, fmt); }
+  }
 
-    document.getElementById("output").textContent =
-`.pixel {
-  width: 1px;
-  height: 1px;
-  ${css.slice(0, -2)};
-}`;
-  };
-};
+  setTimeout(chunk, 0);
+}
+
+function finish(shadows, W, H, scale, fmt) {
+  const count  = shadows.length;
+  const inner  = shadows.join(',\n    ');
+  cssCode = `.pixel {\n  display: block;\n  width: ${scale}px;\n  height: ${scale}px;\n  box-shadow:\n    ${inner};\n}`;
+
+  const pw = W * scale, ph = H * scale;
+  htmlCode = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Pixel Art — generated by PixelMap</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+.wrap {
+  /* reserve space equal to the pixel art dimensions */
+  width: ${pw}px;
+  height: ${ph}px;
+  position: relative;
+}
+${cssCode}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="pixel"></div>
+</div>
+</body>
+</html>`;
+
+  // Stats
+  const bytes   = new TextEncoder().encode(cssCode).length;
+  const sizeStr = bytes > 1048576 ? (bytes/1048576).toFixed(1)+' MB'
+                : bytes > 1024    ? (bytes/1024).toFixed(1)+' KB'
+                :                   bytes+' B';
+
+  document.getElementById('s-px').textContent = count.toLocaleString();
+  document.getElementById('s-sz').textContent = `${W}×${H}`;
+  document.getElementById('s-kb').textContent = sizeStr;
+  document.getElementById('s-sc').textContent = scale + '×';
+  document.getElementById('css-out').textContent = cssCode;
+  document.getElementById('html-out').textContent = htmlCode;
+  document.getElementById('cs-stat').textContent = `${count.toLocaleString()} shadows · ${sizeStr}`;
+
+  document.getElementById('pb').style.display = 'none';
+  document.getElementById('res').style.display = 'block';
+  const btn = document.getElementById('bg');
+  btn.disabled = false;
+  btn.textContent = '▮▮ Re-generate';
+  document.getElementById('res').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ── TABS ── */
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+    document.querySelectorAll('.tc').forEach(x => x.classList.remove('on'));
+    t.classList.add('on');
+    document.getElementById('tc-' + t.dataset.t).classList.add('on');
+  });
+});
+
+/* ── ACTIONS ── */
+async function copyText(text, msg) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast(msg);
+  } catch { toast('Select all & copy manually (Ctrl+A, Ctrl+C)'); }
+}
+
+function dl(name, content, type) {
+  const b = new Blob([content], { type });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+
+document.getElementById('b-ccss').addEventListener('click', () => copyText(cssCode, '✓ CSS copied to clipboard'));
+document.getElementById('b-chtml').addEventListener('click', () => copyText(htmlCode, '✓ HTML copied to clipboard'));
+document.getElementById('b-dcss').addEventListener('click', () => { dl('pixel-art.css', cssCode, 'text/css'); toast('✓ pixel-art.css downloaded'); });
+document.getElementById('b-dhtml').addEventListener('click', () => { dl('pixel-art.html', htmlCode, 'text/html'); toast('✓ pixel-art.html downloaded'); });
+
+document.getElementById('b-zip').addEventListener('click', async () => {
+  if (typeof JSZip === 'undefined') {
+    dl('pixel-art.html', htmlCode, 'text/html');
+    toast('JSZip unavailable — downloading HTML instead');
+    return;
+  }
+  const zip = new JSZip();
+  zip.file('pixel-art.css', cssCode);
+  zip.file('index.html', htmlCode);
+  zip.file('README.md', [
+    '# Pixel Art',
+    '',
+    'Generated by **PixelMap v2** — CSS box-shadow pixel art.',
+    '',
+    '## Usage',
+    '',
+    'Open `index.html` directly in any browser, or:',
+    '',
+    '1. Link `pixel-art.css` in your project',
+    '2. Add one element: `<div class="pixel"></div>`',
+    '',
+    'The `.pixel` element renders your entire image via CSS `box-shadow`.',
+    'No images, no canvas — pure CSS.',
+  ].join('\n'));
+  const blob = await zip.generateAsync({ type: 'blob' });
+  dl('pixel-art.zip', blob, 'application/zip');
+  toast('✓ pixel-art.zip downloaded');
+});
+
+document.getElementById('b-reset').addEventListener('click', () => {
+  img = null; cssCode = ''; htmlCode = '';
+  document.getElementById('res').style.display = 'none';
+  document.getElementById('bg').style.display = 'none';
+  document.getElementById('pb').style.display = 'none';
+  document.getElementById('warn').classList.remove('on');
+  document.getElementById('fi').value = '';
+  toast('✓ Reset — drop a new image to start');
+});
+
+document.getElementById('bg').addEventListener('click', generate);
+
+// Re-generate when settings change (if already processed)
+['scale','alpha','fmt','maxdim'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => {
+    if (img && document.getElementById('res').style.display !== 'none') generate();
+  });
+});
+
+/* ── TOAST ── */
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('on'), 3000);
+}
 </script>
-
 </body>
 </html>
